@@ -1,51 +1,118 @@
 "use client";
 
-import { useState } from "react";
-import { Upload, File, ArrowLeftCircle } from "lucide-react";
 import Link from "next/link";
+import {
+  User,
+  FileText,
+  MessageSquare,
+  ArrowLeft,
+  ChevronRight,
+} from "lucide-react";
 
-export default function ArquivosClientePage({ params }) {
+export default function PerfilCliente({ params }) {
   const { id } = params;
 
-  // Mock temporário — depois vamos conectar ao Supabase
-  const [arquivos, setArquivos] = useState([
-    { id: 1, nome: "Avaliação Facial.pdf", tipo: "PDF" },
-    { id: 2, nome: "Foto - Frente.jpg", tipo: "Imagem" },
-  ]);
-
-  const handleUpload = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const novoArquivo = {
-      id: arquivos.length + 1,
-      nome: file.name,
-      tipo: file.type.includes("image") ? "Imagem" : "Documento",
-    };
-
-    setArquivos([...arquivos, novoArquivo]);
+  // MOCK TEMPORÁRIO — será substituído pelo Supabase no final
+  const cliente = {
+    id,
+    nome: "Cliente Exemplo",
+    status: "Ativa",
+    proximaSessao: "15/01/2026",
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white p-6">
-      {/* Topo */}
-      <div className="flex items-center gap-3 mb-6">
-        <Link href={`/clientes/${id}/prontuario`}>
-          <ArrowLeftCircle className="w-8 h-8 text-purple-700" />
-        </Link>
-        <h1 className="text-3xl font-bold text-purple-900">
-          Arquivos do Cliente
-        </h1>
+    <div className="min-h-screen bg-gradient-to-b from-white to-purple-50 p-6">
+      {/* VOLTAR */}
+      <Link href="/clientes" className="flex items-center text-purple-700 mb-6">
+        <ArrowLeft className="w-5 h-5 mr-2" />
+        Voltar para clientes
+      </Link>
+
+      {/* CABEÇALHO DO CLIENTE */}
+      <div className="bg-white shadow-lg rounded-2xl p-6 border border-purple-100">
+        <div className="flex items-center gap-4">
+          <div className="w-16 h-16 bg-purple-100 text-purple-700 rounded-full flex items-center justify-center">
+            <User className="w-8 h-8" />
+          </div>
+
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">{cliente.nome}</h1>
+            <p className="text-gray-600">
+              Status:{" "}
+              <span className="font-semibold text-green-600">
+                {cliente.status}
+              </span>
+            </p>
+            <p className="text-gray-600">
+              Próxima sessão:{" "}
+              <span className="font-semibold text-purple-700">
+                {cliente.proximaSessao}
+              </span>
+            </p>
+          </div>
+        </div>
       </div>
 
-      {/* Upload */}
-      <label className="flex items-center gap-3 cursor-pointer bg-purple-100 hover:bg-purple-200 p-4 rounded-xl border border-purple-300 mb-6">
-        <Upload className="w-6 h-6 text-purple-700" />
-        <span className="text-purple-900 font-semibold">
-          Enviar novo arquivo
-        </span>
-        <input
-          type="file"
-          className="hidden"
-          onChange={handleUpload}
-        />
+      {/* MENU PREMIUM */}
+      <div className="mt-8 space-y-4">
+
+        {/* Prontuário Inteligente */}
+        <Link
+          href={`/clientes/${id}/prontuario`}
+          className="block bg-white p-5 rounded-xl shadow-md border border-purple-100 hover:shadow-xl transition"
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <FileText className="w-7 h-7 text-purple-700" />
+              <div>
+                <h2 className="text-lg font-semibold">Prontuário Inteligente</h2>
+                <p className="text-sm text-gray-600">
+                  Histórico, gravação automática, arquivos e evolução.
+                </p>
+              </div>
+            </div>
+            <ChevronRight className="w-6 h-6 text-purple-500" />
+          </div>
+        </Link>
+
+        {/* Evolução Facial / Corporal */}
+        <Link
+          href={`/evolucao/${id}`}
+          className="block bg-white p-5 rounded-xl shadow-md border border-purple-100 hover:shadow-xl transition"
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <MessageSquare className="w-7 h-7 text-purple-700" />
+              <div>
+                <h2 className="text-lg font-semibold">Evolução do Cliente</h2>
+                <p className="text-sm text-gray-600">
+                  Antes e depois, fotos, anotações e acompanhamento profissional.
+                </p>
+              </div>
+            </div>
+            <ChevronRight className="w-6 h-6 text-purple-500" />
+          </div>
+        </Link>
+
+        {/* Protocolos Inteligentes */}
+        <Link
+          href={`/protocolos`}
+          className="block bg-white p-5 rounded-xl shadow-md border border-purple-100 hover:shadow-xl transition"
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <FileText className="w-7 h-7 text-purple-700" />
+              <div>
+                <h2 className="text-lg font-semibold">Protocolos Inteligentes</h2>
+                <p className="text-sm text-gray-600">
+                  Sugestões automáticas baseadas nas queixas e avaliações.
+                </p>
+              </div>
+            </div>
+            <ChevronRight className="w-6 h-6 text-purple-500" />
+          </div>
+        </Link>
+      </div>
+    </div>
+  );
+}
