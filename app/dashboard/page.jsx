@@ -1,5 +1,5 @@
-import { Topbar } from "../components/Topbar";
-import { Sidebar } from "../components/Sidebar";
+import Topbar from "./components/Topbar";
+import Sidebar from "./components/Sidebar";
 import { TrendingUp, Users, Calendar, DollarSign } from "lucide-react";
 
 export default function Dashboard() {
