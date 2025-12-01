@@ -1,89 +1,47 @@
-"use client";
-
-import { useState } from "react";
-import { Search, UserPlus, Phone, Calendar, ChevronRight } from "lucide-react";
-
-export default function Clientes() {
-  const [search, setSearch] = useState("");
-
-  const clientes = [
-    { nome: "Milena Santos", telefone: "(17) 99999-2222", ultima: "12/01/2025", status: "Ativa" },
-    { nome: "Carla Medeiros", telefone: "(17) 98888-4444", ultima: "09/01/2025", status: "Avaliação" },
-    { nome: "Larissa Alves", telefone: "(17) 97777-6666", ultima: "05/01/2025", status: "Inativa" },
-  ];
-
-  const filtrados = clientes.filter((c) =>
-    c.nome.toLowerCase().includes(search.toLowerCase())
-  );
-
+export default function NovoClientePage() {
   return (
-    <div className="p-8">
-      
-      {/* Cabeçalho */}
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-bold text-gray-800">
-          Clientes
-        </h1>
+    <div className="p-6 max-w-2xl mx-auto">
+      <h1 className="text-3xl font-bold mb-6">Cadastrar Novo Cliente</h1>
 
-        <button className="flex items-center gap-2 bg-purple-600 text-white px-5 py-2 rounded-lg shadow hover:bg-purple-700 transition">
-          <UserPlus size={20} />
-          Novo Cliente
-        </button>
-      </div>
+      <div className="bg-white shadow-lg rounded-xl p-6 space-y-4">
 
-      {/* Barra de busca */}
-      <div className="flex items-center bg-white p-3 rounded-xl shadow mb-6">
-        <Search className="text-gray-500" />
-        <input
-          type="text"
-          placeholder="Buscar cliente..."
-          className="ml-3 w-full outline-none text-gray-700"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-      </div>
+        <div className="flex flex-col">
+          <label className="font-semibold mb-1">Nome Completo</label>
+          <input
+            type="text"
+            className="border p-3 rounded-lg bg-gray-50"
+            placeholder="Digite o nome do cliente"
+          />
+        </div>
 
-      {/* Lista */}
-      <div className="bg-white rounded-xl shadow overflow-hidden">
-        {filtrados.map((c, index) => (
-          <div
-            key={index}
-            className="flex items-center justify-between p-5 border-b hover:bg-gray-50 transition"
-          >
-            {/* Nome */}
-            <div>
-              <p className="text-lg font-semibold text-gray-700">{c.nome}</p>
-              <p className="text-sm flex items-center gap-1 text-gray-500">
-                <Phone size={16} /> {c.telefone}
-              </p>
-            </div>
+        <div className="flex flex-col">
+          <label className="font-semibold mb-1">Telefone</label>
+          <input
+            type="text"
+            className="border p-3 rounded-lg bg-gray-50"
+            placeholder="(00) 00000-0000"
+          />
+        </div>
 
-            {/* Última avaliação */}
-            <div className="flex items-center gap-1 text-gray-500">
-              <Calendar size={17} />
-              <span>Última avaliação: {c.ultima}</span>
-            </div>
+        <div className="flex flex-col">
+          <label className="font-semibold mb-1">E-mail</label>
+          <input
+            type="text"
+            className="border p-3 rounded-lg bg-gray-50"
+            placeholder="email@exemplo.com"
+          />
+        </div>
 
-            {/* Status */}
-            <div
-              className={`px-3 py-1 rounded-lg text-sm font-bold ${
-                c.status === "Ativa"
-                  ? "bg-green-100 text-green-700"
-                  : c.status === "Avaliação"
-                  ? "bg-yellow-100 text-yellow-700"
-                  : "bg-gray-200 text-gray-700"
-              }`}
-            >
-              {c.status}
-            </div>
+        <div className="flex flex-col">
+          <label className="font-semibold mb-1">Data de Nascimento</label>
+          <input
+            type="date"
+            className="border p-3 rounded-lg bg-gray-50"
+          />
+        </div>
 
-            {/* Acesse */}
-            <button className="p-2 bg-gray-100 rounded-full hover:bg-gray-200 transition">
-              <ChevronRight />
-            </button>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
+        <div className="flex flex-col">
+          <label className="font-semibold mb-1">Observações</label>
+          <textarea
+            rows="4"
+            className="border p-3 rounded-lg
