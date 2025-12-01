@@ -1,52 +1,77 @@
 "use client";
 
-import { useState } from "react";
-import { User, Phone, Mail, MapPin, Calendar, FileText, CreditCard, PlusCircle, ChevronRight } from "lucide-react";
+import { useState, useEffect } from "react";
 
-export default function PerfilCliente() {
-  const [cliente] = useState({
-    nome: "Maria Fernanda Silva",
-    idade: 32,
-    telefone: "(11) 98765-4321",
-    email: "maria.fernanda@email.com",
-    endereco: "Av. Brasil, 123 - Penápolis, SP",
-    totalInvestido: 4820,
-  });
+export default function PerfilClientePage({ params }) {
+  const { id } = params;
 
-  const historico = [
-    { data: "12/01/2025", procedimento: "Harmonização Labial", valor: "R$ 890" },
-    { data: "05/01/2025", procedimento: "Skinbooster", valor: "R$ 690" },
-    { data: "22/12/2024", procedimento: "Bioestimulador", valor: "R$ 1.400" },
-  ];
+  const [loading, setLoading] = useState(true);
+  const [dadosCliente, setDadosCliente] = useState(null);
 
-  const proximos = [
-    { data: "28/01/2025", procedimento: "Retoque Labial", status: "Confirmado" },
-    { data: "05/02/2025", procedimento: "Laser Facial", status: "Pendente" },
-  ];
+  useEffect(() => {
+    async function buscarDados() {
+      setLoading(true);
 
-  const documentos = [
-    { nome: "Termo Skinbooster.pdf" },
-    { nome: "Avaliação Facial – 12.01.pdf" },
-  ];
+      // MOCK — substituir pelo Supabase depois
+      const clienteMock = {
+        id,
+        nome: "Cliente Exemplo",
+        idade: 28,
+        peso: "58 kg",
+        altura: "1.65 m",
+        ultimaAvaliacao: "12/12/2024",
+        objetivo: "Emagrecimento",
+      };
+
+      setTimeout(() => {
+        setDadosCliente(clienteMock);
+        setLoading(false);
+      }, 800);
+    }
+
+    buscarDados();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="p-4 text-center text-gray-600">
+        Carregando dados do cliente...
+      </div>
+    );
+  }
+
+  if (!dadosCliente) {
+    return (
+      <div className="p-4 text-center text-red-600">
+        Cliente não encontrado.
+      </div>
+    );
+  }
 
   return (
-    <div className="max-w-4xl mx-auto px-6 py-8 space-y-10">
+    <div className="p-4">
+      {/* DADOS PRINCIPAIS */}
+      <div className="bg-white shadow-md rounded-xl p-4 mb-4">
+        <h2 className="text-xl font-bold mb-2">Dados do Cliente</h2>
 
-      {/* HEADER */}
-      <div className="bg-white shadow-md rounded-2xl p-6 border border-gray-200">
-        <h1 className="text-3xl font-bold text-gray-800 mb-4">Perfil do Cliente</h1>
-
-        <div className="flex items-center gap-5">
-          <div className="w-20 h-20 rounded-full bg-pink-200 flex items-center justify-center">
-            <User size={36} className="text-pink-700" />
-          </div>
-
-          <div className="space-y-1">
-            <p className="text-xl font-semibold">{cliente.nome}</p>
-            <p className="text-gray-600 text-sm">{cliente.idade} anos</p>
-          </div>
-        </div>
+        <p><strong>Nome:</strong> {dadosCliente.nome}</p>
+        <p><strong>Idade:</strong> {dadosCliente.idade}</p>
+        <p><strong>Peso:</strong> {dadosCliente.peso}</p>
+        <p><strong>Altura:</strong> {dadosCliente.altura}</p>
+        <p><strong>Objetivo:</strong> {dadosCliente.objetivo}</p>
+        <p><strong>Última Avaliação:</strong> {dadosCliente.ultimaAvaliacao}</p>
       </div>
 
-      {/* DADOS PRINCIPAIS */}
-      <div className
+      {/* BOTÕES */}
+      <div className="flex gap-4 mt-4">
+        <button className="px-4 py-2 bg-blue-600 text-white rounded-lg">
+          Ver Evolução
+        </button>
+
+        <button className="px-4 py-2 bg-green-600 text-white rounded-lg">
+          Nova Avaliação
+        </button>
+      </div>
+    </div>
+  );
+}
