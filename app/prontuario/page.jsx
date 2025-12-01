@@ -1,140 +1,158 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { Mic, Square, Camera, Save, FileText, Loader2 } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { Mic, Square, Save, FileText } from "lucide-react";
 
 export default function ProntuarioIA() {
   const [gravando, setGravando] = useState(false);
   const [texto, setTexto] = useState("");
   const [gerando, setGerando] = useState(false);
+  const [historico, setHistorico] = useState([]);
   const mediaRecorderRef = useRef(null);
   const chunksRef = useRef([]);
 
-  // INICIAR GRAVAÇÃO 🔊
+  // CARREGAR HISTÓRICO
+  useEffect(() => {
+    const saved = localStorage.getItem("prontuarios");
+    if (saved) setHistorico(JSON.parse(saved));
+  }, []);
+
+  // INICIAR GRAVAÇÃO 🎙️
   const iniciarGravacao = async () => {
-    setGravando(true);
-    chunksRef.current = [];
-
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
     mediaRecorderRef.current = new MediaRecorder(stream);
+    mediaRecorderRef.current.ondataavailable = (e) => chunksRef.current.push(e.data);
 
-    mediaRecorderRef.current.ondataavailable = (e) => {
-      chunksRef.current.push(e.data);
-    };
+    mediaRecorderRef.current.onstop = gerarTextoIA;
 
-    mediaRecorderRef.current.onstop = async () => {
-      const blob = new Blob(chunksRef.current, { type: "audio/webm" });
-      transcreverAudio(blob);
-    };
-
+    chunksRef.current = [];
     mediaRecorderRef.current.start();
+
+    setGravando(true);
   };
 
-  // PARAR GRAVAÇÃO 🛑
+  // PARAR GRAVAÇÃO 🟥
   const pararGravacao = () => {
-    setGravando(false);
     mediaRecorderRef.current.stop();
+    setGravando(false);
   };
 
-  // ENVIAR ÁUDIO PARA IA — TRANSCRIÇÃO 🎙️➡️🧠
-  const transcreverAudio = async (blob) => {
+  // GERAR TEXTO COM IA ✨
+  const gerarTextoIA = async () => {
     setGerando(true);
 
-    // 🔥 Aqui entra a API da IA (OpenAI Whisper ou Gemini)
-    // No deploy real, isso chama a API pelo backend
-    setTimeout(() => {
-      setTexto(
-        (prev) =>
-          prev +
-          "\n[Transcrição inteligente do áudio adicionada automaticamente...]"
-      );
+    const blob = new Blob(chunksRef.current, { type: "audio/webm" });
+    const reader = new FileReader();
+
+    reader.onloadend = async () => {
+      const base64Audio = reader.result.split(",")[1];
+
+      // IA SIMULADA
+      const textoGerado =
+        "Resumo clínico:\n• Paciente relata dores na região X.\n• Observado: linhas, manchas, textura irregular.\n• Recomendado protocolo personalizado com foco em hidratação profunda e bioestimuladores.\n\nEste texto será substituído pela IA real depois.";
+
+      setTexto(textoGerado);
       setGerando(false);
-    }, 2300);
+    };
+
+    reader.readAsDataURL(blob);
   };
 
-  // GERAR PROTOCOLO SUGERIDO — IA ESTÉTICA ✨
-  const gerarProtocolo = () => {
-    setGerando(true);
+  // SALVAR PRONTUÁRIO 💾
+  const salvarProntuario = () => {
+    if (!texto.trim()) return;
 
-    setTimeout(() => {
-      setTexto(
-        (prev) =>
-          prev +
-          `\n\n✨ **Protocolo sugerido pela IA BonitaDerme Clinic Pro:**\n
-• Hidratação intensiva com Skinbooster (2 sessões)  
-• Bioestimulador de colágeno — Radiesse 1,5ml  
-• Laser Lavieen — 1 sessão  
-• Manutenção mensal com enzimas personalizadas  
-• Avaliação fotográfica a cada visita  
-`
-      );
-      setGerando(false);
-    }, 2000);
+    const novo = {
+      id: Date.now(),
+      conteudo: texto,
+      data: new Date().toLocaleString(),
+    };
+
+    const atualizado = [novo, ...historico];
+    setHistorico(atualizado);
+    localStorage.setItem("prontuarios", JSON.stringify(atualizado));
+
+    setTexto("");
+    alert("Prontuário salvo com sucesso!");
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-zinc-100 to-zinc-300 dark:from-zinc-950 dark:to-zinc-900 p-6 text-zinc-900 dark:text-white">
+    <div className="space-y-6">
 
-      <div className="max-w-3xl mx-auto bg-white/20 dark:bg-black/30 backdrop-blur-xl shadow-2xl p-8 rounded-2xl border border-white/20">
+      {/* ÁREA DE GRAVAÇÃO */}
+      <div className="bg-purple-100 border border-purple-300 p-5 rounded-xl">
+        <h2 className="text-xl font-semibold mb-3 text-purple-700">
+          Capturar relato da paciente (IA)
+        </h2>
 
-        <h1 className="text-3xl font-bold mb-6 text-center">
-          🩺 Prontuário Inteligente — BonitaDerme Clinic Pro
-        </h1>
-
-        {/* BOTÕES */}
-        <div className="flex flex-wrap gap-4 justify-center mb-6">
-
-          {/* GRAVAR ÁUDIO */}
-          {!gravando ? (
-            <button
-              onClick={iniciarGravacao}
-              className="px-5 py-3 bg-purple-700 hover:bg-purple-600 text-white rounded-xl flex items-center gap-2 shadow-lg"
-            >
-              <Mic size={20} /> Iniciar Gravação
-            </button>
-          ) : (
-            <button
-              onClick={pararGravacao}
-              className="px-5 py-3 bg-red-600 hover:bg-red-500 text-white rounded-xl flex items-center gap-2 shadow-lg"
-            >
-              <Square size={20} /> Parar
-            </button>
-          )}
-
-          {/* FOTO */}
-          <button className="px-5 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl flex items-center gap-2 shadow-lg">
-            <Camera size={20} /> Adicionar Foto
-          </button>
-
-          {/* PROTOCOLO IA */}
+        {gravando ? (
           <button
-            onClick={gerarProtocolo}
-            className="px-5 py-3 bg-green-600 hover:bg-green-500 text-white rounded-xl flex items-center gap-2 shadow-lg"
+            onClick={pararGravacao}
+            className="bg-red-600 text-white px-6 py-3 rounded-xl flex items-center gap-2"
           >
-            <FileText size={20} /> Gerar Protocolo IA
+            <Square size={20} /> Parar gravação
           </button>
-
-          {/* SALVAR */}
-          <button className="px-5 py-3 bg-zinc-800 hover:bg-zinc-700 text-white rounded-xl flex items-center gap-2 shadow-lg">
-            <Save size={20} /> Salvar Prontuário
+        ) : (
+          <button
+            onClick={iniciarGravacao}
+            className="bg-purple-600 text-white px-6 py-3 rounded-xl flex items-center gap-2"
+          >
+            <Mic size={20} /> Iniciar gravação
           </button>
-        </div>
-
-        {/* LOADING */}
-        {gerando && (
-          <div className="flex items-center gap-3 text-purple-500 mb-3 animate-pulse">
-            <Loader2 className="animate-spin" />
-            Processando com IA…
-          </div>
         )}
 
-        {/* ÁREA DE TEXTO */}
+        {gerando && (
+          <p className="mt-3 text-purple-700 animate-pulse">
+            Processando áudio… gerando texto com IA…
+          </p>
+        )}
+      </div>
+
+      {/* TEXTO GERADO */}
+      <div>
+        <h3 className="text-lg font-semibold text-gray-800 mb-2">
+          Texto gerado pela IA
+        </h3>
         <textarea
-          className="w-full h-96 p-4 rounded-xl bg-white/50 dark:bg-black/40 backdrop-blur border border-zinc-300 dark:border-zinc-700 outline-none"
           value={texto}
           onChange={(e) => setTexto(e.target.value)}
-          placeholder="O prontuário será preenchido automaticamente pela IA conforme você fala..."
-        ></textarea>
+          className="w-full min-h-[180px] p-4 border rounded-xl bg-white shadow"
+          placeholder="O texto aparecerá aqui…"
+        />
+      </div>
+
+      {/* BOTÃO SALVAR */}
+      <button
+        onClick={salvarProntuario}
+        className="bg-green-600 text-white px-6 py-3 rounded-xl flex items-center gap-2"
+      >
+        <Save size={20} /> Salvar prontuário
+      </button>
+
+      {/* HISTÓRICO */}
+      <div className="pt-6">
+        <h3 className="text-2xl font-bold text-gray-800 mb-4">Histórico</h3>
+
+        {historico.length === 0 && (
+          <p className="text-gray-500">Nenhum prontuário salvo ainda.</p>
+        )}
+
+        <div className="space-y-4">
+          {historico.map((item) => (
+            <div
+              key={item.id}
+              className="border rounded-xl p-4 shadow bg-white"
+            >
+              <div className="flex justify-between">
+                <span className="text-sm text-gray-500">{item.data}</span>
+                <FileText className="text-purple-600" />
+              </div>
+
+              <p className="whitespace-pre-line mt-2">{item.conteudo}</p>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
