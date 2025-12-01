@@ -36,4 +36,54 @@ export default function Clientes() {
         <Search className="text-gray-500" />
         <input
           type="text"
-          placeholder
+          placeholder="Buscar cliente..."
+          className="ml-3 w-full outline-none text-gray-700"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+      </div>
+
+      {/* Lista */}
+      <div className="bg-white rounded-xl shadow overflow-hidden">
+        {filtrados.map((c, index) => (
+          <div
+            key={index}
+            className="flex items-center justify-between p-5 border-b hover:bg-gray-50 transition"
+          >
+            {/* Nome */}
+            <div>
+              <p className="text-lg font-semibold text-gray-700">{c.nome}</p>
+              <p className="text-sm flex items-center gap-1 text-gray-500">
+                <Phone size={16} /> {c.telefone}
+              </p>
+            </div>
+
+            {/* Última avaliação */}
+            <div className="flex items-center gap-1 text-gray-500">
+              <Calendar size={17} />
+              <span>Última avaliação: {c.ultima}</span>
+            </div>
+
+            {/* Status */}
+            <div
+              className={`px-3 py-1 rounded-lg text-sm font-bold ${
+                c.status === "Ativa"
+                  ? "bg-green-100 text-green-700"
+                  : c.status === "Avaliação"
+                  ? "bg-yellow-100 text-yellow-700"
+                  : "bg-gray-200 text-gray-700"
+              }`}
+            >
+              {c.status}
+            </div>
+
+            {/* Acesse */}
+            <button className="p-2 bg-gray-100 rounded-full hover:bg-gray-200 transition">
+              <ChevronRight />
+            </button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
