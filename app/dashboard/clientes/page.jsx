@@ -44,4 +44,15 @@ export default function NovoClientePage() {
           <label className="font-semibold mb-1">Observações</label>
           <textarea
             rows="4"
-            className="border p-3 rounded-lg
+            className="border p-3 rounded-lg bg-gray-50"
+            placeholder="Anotações importantes sobre o cliente"
+          ></textarea>
+        </div>
+
+        <button className="w-full bg-purple-600 hover:bg-purple-700 transition text-white font-bold p-3 rounded-lg">
+          Salvar Cliente
+        </button>
+      </div>
+    </div>
+  );
+}
