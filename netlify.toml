@@ -2,8 +2,10 @@
   command = "npm run build"
   publish = ".next"
 
-[functions]
-  directory = "netlify/functions"
-
 [[plugins]]
   package = "@netlify/plugin-nextjs"
+
+[build.environment]
+  NODE_VERSION = "18"
+  NEXT_DISABLE_OPTIMIZED_CSS = "true" 
+  NEXT_TELEMETRY_DISABLED = "1"
