@@ -2,9 +2,12 @@
 
 import { useState, useEffect } from "react";
 
-// Impede erro de pre-render no Netlify
+// Impede erros de pre-render no Netlify
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
+
+// Desabilita qualquer pré-render
+export const revalidate = 0;
 
 export default function BodyScanPage() {
   const [loading, setLoading] = useState(true);
@@ -14,17 +17,17 @@ export default function BodyScanPage() {
     async function carregar() {
       setLoading(true);
 
-      // MOCK TEMPORÁRIO
-      const mock = {
-        nome: "Cliente Exemplo",
-        peso: "72 kg",
-        gordura: "22%",
-        musculos: "35%",
-        hidratacao: "58%",
+      // MOCK TEMPORÁRIO — ajuste depois quando conectar API
+      const dadosMock = {
+        peso: "72kg",
+        gordura: "18%",
+        musculo: "41%",
+        agua: "55%",
+        metabolismo: "1650 kcal",
       };
 
       setTimeout(() => {
-        setDados(mock);
+        setDados(dadosMock);
         setLoading(false);
       }, 800);
     }
@@ -32,17 +35,25 @@ export default function BodyScanPage() {
     carregar();
   }, []);
 
-  if (loading) return <p style={{ padding: 20 }}>Carregando dados…</p>;
+  if (loading) {
+    return (
+      <div style={{ padding: 20 }}>
+        <h2>Carregando Body Scan...</h2>
+      </div>
+    );
+  }
 
   return (
     <div style={{ padding: 20 }}>
       <h1>Body Scan</h1>
 
-      <p><strong>Nome:</strong> {dados.nome}</p>
-      <p><strong>Peso:</strong> {dados.peso}</p>
-      <p><strong>% Gordura:</strong> {dados.gordura}</p>
-      <p><strong>Massa Muscular:</strong> {dados.musculos}</p>
-      <p><strong>Hidratação:</strong> {dados.hidratacao}</p>
+      <div style={{ marginTop: 20 }}>
+        <p><strong>Peso:</strong> {dados.peso}</p>
+        <p><strong>Gordura:</strong> {dados.gordura}</p>
+        <p><strong>Músculo:</strong> {dados.musculo}</p>
+        <p><strong>Água:</strong> {dados.agua}</p>
+        <p><strong>Metabolismo:</strong> {dados.metabolismo}</p>
+      </div>
     </div>
   );
 }
