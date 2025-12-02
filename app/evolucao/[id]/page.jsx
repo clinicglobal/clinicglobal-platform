@@ -2,11 +2,6 @@
 
 import { useState, useEffect } from "react";
 
-// Impede falha no build do Netlify para rotas dinâmicas
-export function generateStaticParams() {
-  return [];
-}
-
 export const dynamic = "force-dynamic";
 
 export default function EvolucaoPage({ params }) {
@@ -19,47 +14,44 @@ export default function EvolucaoPage({ params }) {
     const buscarDados = async () => {
       setLoading(true);
 
-      // MOCK TEMPORÁRIO – depois colocamos API real
+      // MOCK TEMPORÁRIO — depois vamos substituir pela API real
       const clienteMock = {
         id,
         nome: "Cliente Exemplo",
         peso: "72kg",
         evolucao: [
-          "Redução de medidas",
-          "Melhora da firmeza da pele",
-          "Aumento de massa magra",
-        ],
+          { dia: "01/01", peso: "72kg" },
+          { dia: "15/01", peso: "71kg" },
+          { dia: "30/01", peso: "70kg" }
+        ]
       };
 
-      setTimeout(() => {
-        setDadosCliente(clienteMock);
-        setLoading(false);
-      }, 600);
+      setDadosCliente(clienteMock);
+      setLoading(false);
     };
 
     buscarDados();
   }, [id]);
 
+  if (loading) {
+    return <p>Carregando evolução...</p>;
+  }
+
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>Evolução do Cliente</h1>
-      <p><b>ID do cliente:</b> {id}</p>
+    <div style={{ padding: 20 }}>
+      <h1>Evolução da Cliente</h1>
+      <p><strong>ID:</strong> {dadosCliente.id}</p>
+      <p><strong>Nome:</strong> {dadosCliente.nome}</p>
+      <p><strong>Peso atual:</strong> {dadosCliente.peso}</p>
 
-      {loading && <p>Carregando dados...</p>}
-
-      {!loading && dadosCliente && (
-        <div>
-          <h2>{dadosCliente.nome}</h2>
-          <p><b>Peso:</b> {dadosCliente.peso}</p>
-
-          <h3>Evoluções:</h3>
-          <ul>
-            {dadosCliente.evolucao.map((item, index) => (
-              <li key={index}>{item}</li>
-            ))}
-          </ul>
-        </div>
-      )}
+      <h2 style={{ marginTop: 20 }}>Histórico</h2>
+      <ul>
+        {dadosCliente.evolucao.map((item, index) => (
+          <li key={index}>
+            {item.dia}: {item.peso}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
