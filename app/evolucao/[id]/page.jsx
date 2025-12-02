@@ -2,7 +2,11 @@
 
 import { useState, useEffect } from "react";
 
-// Evita necessidade de generateStaticParams no Netlify
+// Impede falha no build do Netlify para rotas dinâmicas
+export function generateStaticParams() {
+  return [];
+}
+
 export const dynamic = "force-dynamic";
 
 export default function EvolucaoPage({ params }) {
@@ -15,67 +19,47 @@ export default function EvolucaoPage({ params }) {
     const buscarDados = async () => {
       setLoading(true);
 
-      // MOCK — Depois vai substituir pelo Supabase
+      // MOCK TEMPORÁRIO – depois colocamos API real
       const clienteMock = {
         id,
         nome: "Cliente Exemplo",
-        idade: 32,
-        peso: 58,
-        gordura: "21%",
+        peso: "72kg",
         evolucao: [
-          { data: "2024-01-10", peso: 60, gordura: "23%" },
-          { data: "2024-02-10", peso: 58, gordura: "21%" },
+          "Redução de medidas",
+          "Melhora da firmeza da pele",
+          "Aumento de massa magra",
         ],
       };
 
       setTimeout(() => {
         setDadosCliente(clienteMock);
         setLoading(false);
-      }, 800);
+      }, 600);
     };
 
     buscarDados();
   }, [id]);
 
-  if (loading) {
-    return (
-      <div className="p-6 text-center text-lg font-medium">
-        Carregando dados...
-      </div>
-    );
-  }
-
-  if (!dadosCliente) {
-    return (
-      <div className="p-6 text-center text-lg font-medium">
-        Nenhum dado encontrado.
-      </div>
-    );
-  }
-
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">
-        Evolução de {dadosCliente.nome}
-      </h1>
+    <div style={{ padding: "20px" }}>
+      <h1>Evolução do Cliente</h1>
+      <p><b>ID do cliente:</b> {id}</p>
 
-      <div className="bg-white shadow p-4 rounded-md mb-6">
-        <p><strong>Idade:</strong> {dadosCliente.idade}</p>
-        <p><strong>Peso atual:</strong> {dadosCliente.peso} kg</p>
-        <p><strong>% Gordura:</strong> {dadosCliente.gordura}</p>
-      </div>
+      {loading && <p>Carregando dados...</p>}
 
-      <h2 className="text-xl font-semibold mb-2">Histórico:</h2>
+      {!loading && dadosCliente && (
+        <div>
+          <h2>{dadosCliente.nome}</h2>
+          <p><b>Peso:</b> {dadosCliente.peso}</p>
 
-      <div className="bg-white shadow p-4 rounded-md">
-        {dadosCliente.evolucao.map((evo, index) => (
-          <div key={index} className="border-b py-2">
-            <p><strong>Data:</strong> {evo.data}</p>
-            <p><strong>Peso:</strong> {evo.peso} kg</p>
-            <p><strong>Gordura:</strong> {evo.gordura}</p>
-          </div>
-        ))}
-      </div>
+          <h3>Evoluções:</h3>
+          <ul>
+            {dadosCliente.evolucao.map((item, index) => (
+              <li key={index}>{item}</li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }
